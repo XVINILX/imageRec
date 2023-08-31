@@ -1,0 +1,11 @@
+src/build
+/Dep
+/Debug
+/src/app/__pycache__
+/build/
+/x64
+/.vscode
+*.vcxproj
+*.vcxproj.*
+*.ui
+src/*.root
