@@ -13,9 +13,9 @@
 int main(int argc, char *argv[])
 {
 
-    double PI = 3.14159265358979323846;
+    float PI = 3.14159265358979323846;
 
-    std::cout << "programa iniciando" << std::endl;
+    std::cout << argv[1] << std::endl;
 
     std::string currentPath = std::filesystem::current_path().string();
     TFile MyFile(argv[1]);
@@ -24,11 +24,11 @@ int main(int argc, char *argv[])
         std::cout << "Error opening file" << std::endl;
         exit(-1);
     }
-
+    // TODO refatorar para receber valores de double no lugar de float
     std::vector<std::array<float, 2>> backprojectionValues;
 
     std::vector<std::vector<std::array<float, 4>>> allProjections;
-    std::vector<std::vector<std::array<float, 4>>> positions3d;
+    std::vector<std::vector<Projection>> positions3d;
     std::vector<std::array<float, 3>> projection;
     std::array<float, 4> line;
 
@@ -41,16 +41,16 @@ int main(int argc, char *argv[])
     std::string coincidencesString = "Coincidences;1";
     const char *coincidences = coincidencesString.c_str();
 
-    double deltaYt = (13.5 / 8);
-    double deltaX = 100;
-    double tang = (deltaYt / deltaX);
-    double minEnergy = 0.498;
-    double maxEnergy = 0.550;
+    float deltaYt = (13.5 / 8);
+    float deltaX = 100;
+    float tang = (deltaYt / deltaX);
+    float minEnergy = 0.498;
+    float maxEnergy = 0.550;
 
-    double deltaTheta = atan(tang);
+    float deltaTheta = atan(tang);
     std::unique_ptr<TTree> tTreeCoincidences(MyFile.Get<TTree>("Coincidences;1"));
     int entries = tTreeCoincidences->GetEntries();
-    float en1, en2, posX1, posX2, posZ1, posZ2;
+    Float_t en1, en2, posX1, posX2, posZ1, posZ2;
     int crystalID1, crystalID2, run, rsectorID1, rsectorID2;
     tTreeCoincidences->SetBranchAddress("energy1", &en1);
     tTreeCoincidences->SetBranchAddress("energy2", &en2);
@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
         myHistos[h] = new TH2F(histogramNameStream.str().c_str(), "", 8, -11.76, +11.76, 120, 0, 180);
 
         positions3d.push_back(backprojection(allProjections[h], h));
-        projections(allProjections[h], h);
 
         int sino_size = allProjections[h].size();
 
@@ -123,7 +122,7 @@ int main(int argc, char *argv[])
         c1.Update();
     }
 
-    reconstruction3d(positions3d);
+    // reconstruction3d(positions3d);
 
     return 0;
 }
