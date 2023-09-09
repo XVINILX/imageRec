@@ -9,3 +9,4 @@ src/build
 *.vcxproj.*
 *.ui
 src/*.root
+/src/app/appenv/
