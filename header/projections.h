@@ -7,10 +7,12 @@ public:
     float angle;
     std::array<float, 4> event;
     std::vector<std::array<float, 4>> projection;
-
-    // TODO criar função para reproduzir projeções
+    std::vector<std::array<float, 2>> fourierTransform2d;
+    std::vector<std::array<float, 2>> inverseFourier;
 
 public:
     Projection(float angle) : angle(angle){};
     void projectionFunction(std::array<float, 4> event);
+    void fourierProjection();
+    void inverseFourierProjection();
 };
