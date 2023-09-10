@@ -26,9 +26,10 @@ std::vector<Projection> backprojection(std::vector<std::array<float, 4>> project
     backprojectionNameStream << "./images/backProjection" << h << ".png";
     // dft(projections, h);
 
-    TH2F *myBackProjection = new TH2F(backprojectionNameStream.str().c_str(), backprojectionNameStream.str().c_str(), 8, -11.76, +11.76 + offset, 8, -11.76, +11.76 + offset);
+    TH2F *myBackProjection = new TH2F(backprojectionNameStream.str().c_str(), backprojectionNameStream.str().c_str(), 8, -11.76, +11.76, 8, -11.76, +11.76);
 
     std::vector<std::array<float, 4>> projectionsValues;
+    std::vector<std::array<float, 2>> fourierXandY;
     std::vector<Projection> projectionVector;
     std::array<float, 4>
         positions;
@@ -56,51 +57,33 @@ std::vector<Projection> backprojection(std::vector<std::array<float, 4>> project
         }
         Projection projection(angle);
         projection.projectionFunction(projections[k]);
+
         projectionVector.push_back(projection);
     }
     float N = 0.0;
     std::cout << projectionVector.size() << std::endl;
-    std::vector<float> possiblePositions;
-    /* Simple Back Projection
-     */
+    int projectionVectorSize = projectionVector.size();
+    for (int k = 0; k < projectionVectorSize; k++)
+    {
 
-    // for (int i = 0; i < (columnN); i++)
-    // {
-    //     possiblePositions.push_back(((i - (columnN / 2)) * pitch) + offset);
-    // }
+        projectionVector[k].fourierProjection();
+        projectionVector[k].inverseFourierProjection();
+        int projectionsSize = projectionVector[k].inverseFourier.size();
+        for (int m = 0; m < projectionsSize; m++)
+        {
 
-    // for (int x = 0; x < columnN; x++)
-    // {
-    //     for (int y = 0; y < columnN; y++)
-    //     {
-    //         for (int i = 0; i < projectionSize; i++)
-    //         {
-    //             float s = (projections[i][0]);
-    //             float theta = projections[i][1];
-    //             float r = (possiblePositions[x] * cos(theta) + possiblePositions[y] * sin(theta));
-    //             if ((s < (r + 0.1)) && (s > (r - 0.1)))
-    //             {
-    //                 N++;
-    //                 positions[0] = possiblePositions[x];
-    //                 positions[1] = possiblePositions[y];
-    //                 positions[2] = projections[i][2];
-    //                 positions[3] = 0;
-    //                 projectionsValues.push_back(positions);
-    //                 myBackProjection->Fill(possiblePositions[x], possiblePositions[y]);
-    //             }
-    //         }
-    //     }
-    // }
+            myBackProjection->Fill(projectionVector[k].inverseFourier[m][0], projectionVector[k].inverseFourier[m][1]);
+        }
+    }
+
+    std::cout << "Ended BackProjection of" << h << std::endl;
 
     c2.SetCanvasSize(600, 600);
     c2.SetWindowSize(700, 700);
     c2.GetFrame()->SetLineColor(0);
     c2.SetFrameFillColor(1);
-    myBackProjection->GetXaxis()->SetLabelSize(0);
-    myBackProjection->GetYaxis()->SetLabelSize(0);
     myBackProjection->GetYaxis()->SetTitle("Eixo Y");
     myBackProjection->GetXaxis()->SetTitle("Eixo X");
-    myBackProjection->Scale(1 / N);
     myBackProjection->Draw("COLZ");
 
     c2.SaveAs(backprojectionNameStream.str().c_str());
