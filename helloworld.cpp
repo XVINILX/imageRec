@@ -70,14 +70,6 @@ int main(int argc, char *argv[])
             int slice = (C_crystal1 + C_crystal2);
             theta_and_s_crystal_id = theta_s_crystal(crystalID1, crystalID2, run, crystals_number, deltaTheta, rsectorID1);
             int allProjectionsSliceSize = (allProjections[slice]).size();
-            // for (int k = 0; k < allProjectionsSliceSize; k++)
-            // {
-            //     if ((allProjections[slice][k][0] == theta_and_s_crystal_id[0]) && (allProjections[slice][k][1] == theta_and_s_crystal_id[1]))
-            //     {
-            //         allProjections[slice][k][3] = allProjections[slice][k][3] + 1;
-            //         break;
-            //     }
-            // }
             line[0] = theta_and_s_crystal_id[0];
             line[1] = theta_and_s_crystal_id[1];
             line[2] = theta_and_s_crystal_id[2];

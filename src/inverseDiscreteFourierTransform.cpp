@@ -3,6 +3,7 @@
 #include <complex>
 #include <vector>
 #include <iostream>
+#include <TVirtualFFT.h>
 #include "../header/inverseDiscreteFourierTransform.h"
 
 /*https://jakevdp.github.io/blog/2013/08/28/understanding-the-fft/ */
@@ -11,31 +12,53 @@
 
 std::vector<std::array<float, 2>> idft(std::vector<std::array<float, 2>> projectionProfile)
 {
-	// TODO ERRO NA INVERSE DISCRETE
-	const int projectionsProfileSize = projectionProfile.size();
+
+	int projectionsProfileSize = projectionProfile.size() * 2;
 	float PI = 3.14159265358979323846;
 
 	std::vector<std::array<float, 2>> projectionProfileFourier;
 	std::array<float, 2> valuesFourier;
-	int n = 0;
+	Double_t xKPoints[projectionsProfileSize];
+	Double_t yKPoints[projectionsProfileSize];
+	std::cout << "projections profile size" << projectionsProfileSize << std::endl;
+
+	TVirtualFFT *fft = TVirtualFFT::FFT(1, &projectionsProfileSize, "C2R");
 
 	for (int k = 0; k < projectionsProfileSize; k++)
 	{
-		float sum = 0;
-		valuesFourier[0] = 0;
-		valuesFourier[1] = 0;
-		for (int m = 0; m < projectionsProfileSize; m++)
-		{
-			for (int n = 0; n < projectionsProfileSize; n++)
-			{
-				valuesFourier[0] = valuesFourier[0] + projectionProfile[n][0] * (cos(2 * PI * m * n / projectionsProfileSize));
-				valuesFourier[1] = valuesFourier[1] + projectionProfile[n][1] * (cos(2 * PI * m * n / projectionsProfileSize));
-			}
-		}
+		xKPoints[k] = projectionProfile[k][0];
+		yKPoints[k] = projectionProfile[k][1];
+		// float sum0 = 0;
+		// float sum1 = 0;
+		// for (int m = 0; m < projectionsProfileSize; m++)
+		// {
+		// 	for (int n = 0; n < projectionsProfileSize; n++)
+		// 	{
+		// 		sum0 = sum0 + projectionProfile[n][0] * (cos(2 * PI * m * n / projectionsProfileSize));
+		// 		sum1 = sum1 + projectionProfile[n][0] * (cos(2 * PI * m * n / projectionsProfileSize));
+		// 	}
+		// }
 
-		projectionProfileFourier.push_back(valuesFourier);
+		// valuesFourier[0] = sum0;
+		// valuesFourier[1] = sum1;
+
+		// projectionProfileFourier.push_back(valuesFourier);
 	}
 
-	std::cout << "Ended a sum" << std::endl;
+	fft->SetPoints(xKPoints);
+	fft->Transform();
+
+	Double_t *re_full = new Double_t[projectionsProfileSize];
+	Double_t *im_full = new Double_t[projectionsProfileSize];
+	fft->GetPoints(re_full);
+
+	for (int k = 0; k < projectionsProfileSize; k++)
+	{
+		std::cout << re_full[k] << std::endl;
+		std::cout << im_full[k] << std::endl;
+		valuesFourier[0] = re_full[k];
+		valuesFourier[1] = im_full[k];
+		projectionProfileFourier.push_back(valuesFourier);
+	}
 	return projectionProfileFourier;
 }

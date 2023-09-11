@@ -21,14 +21,14 @@ void Projection::fourierProjection()
 {
 	std::array<float, 2> intermediateArray;
 
-	std::vector<std::array<float, 4>> fourierTransform;
+	std::vector<std::array<float, 2>> fourierTransform;
 	fourierTransform = dft(projection);
 
 	int fourierTransformSize = fourierTransform.size();
 	for (int k = 0; k < fourierTransformSize; k++)
 	{
-		intermediateArray[0] = fourierTransform[k][0] * cos(angle);
-		intermediateArray[1] = fourierTransform[k][0] * sin(angle);
+		intermediateArray[0] = sqrt(fourierTransform[k][0] * fourierTransform[k][0] + fourierTransform[k][1] * fourierTransform[k][1]) * cos(angle);
+		intermediateArray[1] = sqrt(fourierTransform[k][0] * fourierTransform[k][0] + fourierTransform[k][1] * fourierTransform[k][1]) * sin(angle);
 		fourierTransform2d.push_back(intermediateArray);
 	};
 }
